@@ -25,9 +25,8 @@ for imagePath in paths.list_images(args["images"]):
     if fm < args["threshold"]:
         text = "Blurry"
     else:
-        cv2.imshow("graycsale image", image)
-        break
         count += 1
+
 print("Total count : ", count)
 # for imagePath in paths.list_images(args["images"]):
 # 	# load the image, convert it to grayscale, and compute the
