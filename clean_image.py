@@ -10,7 +10,7 @@ def variance_of_laplacian(image):
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--images", required=True,
 	help="./images")
-ap.add_argument("-t", "--threshold", type=float, default=10.0,
+ap.add_argument("-t", "--threshold", type=float, default=10.00,
 	help="focus measures that fall below this value will be considered 'blurry'")
 args = vars(ap.parse_args())
 count = 0
@@ -26,6 +26,9 @@ for imagePath in paths.list_images(args["images"]):
         text = "Blurry"
     else:
         count += 1
+        # cv2.imshow('graycsale image',image)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
 print("Total count : ", count)
 # for imagePath in paths.list_images(args["images"]):
