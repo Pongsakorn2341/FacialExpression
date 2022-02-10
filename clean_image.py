@@ -14,6 +14,7 @@ ap.add_argument("-t", "--threshold", type=float, default=10.00,
 	help="focus measures that fall below this value will be considered 'blurry'")
 args = vars(ap.parse_args())
 count = 0
+allImage = []
 for imagePath in paths.list_images(args["images"]):
     image = cv2.imread(imagePath)
     dimensions = image.shape
@@ -26,11 +27,17 @@ for imagePath in paths.list_images(args["images"]):
         text = "Blurry"
     else:
         count += 1
+        print(imagePath);
+        allImage.append(imagePath);
         # cv2.imshow('graycsale image',image)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
 
 print("Total count : ", count)
+f = open("demofile2.txt", "a")
+print("\n".join(allImage))
+f.write("\n".join(allImage))
+f.close()
 # for imagePath in paths.list_images(args["images"]):
 # 	# load the image, convert it to grayscale, and compute the
 # 	# focus measure of the image using the Variance of Laplacian
