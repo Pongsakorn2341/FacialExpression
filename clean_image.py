@@ -2,6 +2,7 @@ from imutils import paths
 import argparse
 import cv2
 import time
+import os
 
 def variance_of_laplacian(image):
 	# compute the Laplacian of the image and then return the focus
@@ -18,7 +19,9 @@ start = time.time()
 print("Start Time : ", start)
 count = 0
 allImage = []
+
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+path = 'D:\Project\\facial_cleandata\\new_image'
 for imagePath in paths.list_images(args["images"]):
     image = cv2.imread(imagePath)
     dimensions = image.shape
@@ -34,7 +37,9 @@ for imagePath in paths.list_images(args["images"]):
         continue
     
     count += 1
-    print(imagePath);
+    #print(imagePath)
+    cv2.imwrite(os.path.join(path , 'grayScale'+str(count)+'.jpg'), gray)
+    print(os.path.join(path , 'grayScale'+str(count)+'.jpg'))
     allImage.append(imagePath)
     # cv2.imshow('graycsale image',image)
     # cv2.waitKey(0)
