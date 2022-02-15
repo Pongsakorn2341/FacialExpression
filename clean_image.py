@@ -31,12 +31,25 @@ if os.path.exists(dir):
     shutil.rmtree(dir)
 os.makedirs(dir)
 
+def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
+    dim = None
+    (h, w) = image.shape[:2]
+    if width is None and height is None:
+        return image
+    if width is None:
+        r = height / float(h)
+        dim = (int (w * r), height)
+    else:
+        r = width / float(w)
+        dim = (width, int(h * r))
+    resized = cv2.resize(image, dim, interpolation = inter)
+    return resized
+
 for imagePath in paths.list_images(args["images"]):
     image = cv2.imread(imagePath)
 
     # resize image
-    dim = (350, 350)
-    resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    resized = image_resize(image, 350, 350)
 
     # change color
     gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
