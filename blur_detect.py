@@ -14,7 +14,7 @@ args = vars(ap.parse_args())
 count = 0
 allImage = []
 path = os.getcwd()
-dir = path + '/cleaned_images'
+dir = path + '/resize_image'
 if os.path.exists(dir):
     shutil.rmtree(dir)
 os.makedirs(dir)
@@ -25,5 +25,5 @@ for imagePath in paths.list_images(args["images"]):
     width_size = int((float(image.size[0]) * float(height_percent)))
     image = image.resize((width_size, fixed_height), PIL.Image.NEAREST)
     imageName = (imagePath.split("/"))[1]
-    newPath = "cleaned_images/" + imageName
+    newPath = "resize_image/" + imageName
     image.save(newPath)
