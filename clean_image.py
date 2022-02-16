@@ -24,7 +24,8 @@ allImage = []
 
 # create cleaned_images floder
 path = os.getcwd()
-dir = path + '/cleaned_images'
+# dir = path + '/cleaned_images'
+dir = path + '/resize_image'
 if os.path.exists(dir):
     shutil.rmtree(dir)
 os.makedirs(dir)
