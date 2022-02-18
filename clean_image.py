@@ -47,35 +47,25 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
 for imagePath in paths.list_images(args["images"]):
     image = cv2.imread(imagePath)
     height, width, channels = image.shape
-    isResize = False
+    # check size image
     if(width != 350 or height != 350):
-        isResize = True
-        image = image_resize(image, 350, 350)
+        continue
     # change color
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     fm = variance_of_laplacian(gray)
-
     # detect face
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     face = face_cascade.detectMultiScale(gray, 1.1, 4)
     if len(face) == 0:
         # print(imagePath)
         continue
-
     # check blurry
     if fm < args["threshold"]:
-        if(isResize):
-            print(fm, imagePath)
-            cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
-        # print(imagePath)
+        # cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
         continue
     count += 1
 
-    if(isResize):
-        print(imagePath);
-        # fileName = imagePath.split("/")
-        # print(fileName)
-        # cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
+    print(imagePath)
     allImage.append(imagePath)
     # cv2.imshow('graycsale image',image)
     # cv2.waitKey(0)
