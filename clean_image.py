@@ -65,7 +65,7 @@ for imagePath in paths.list_images(args["images"]):
     count += 1
 
     print(imagePath)
-    cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
+    cv2.imwrite(os.path.join(dir , (imagePath.split('\\'))[1]), gray)
     allImage.append(imagePath)
     # cv2.imshow('graycsale image',image)
     # cv2.waitKey(0)
