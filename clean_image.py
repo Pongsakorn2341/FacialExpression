@@ -25,7 +25,7 @@ allImage = []
 # create cleaned_images floder
 path = os.getcwd()
 # dir = path + '/cleaned_images'
-dir = path + '/resize_image'
+dir = path + '/cleaned_images'
 if os.path.exists(dir):
     shutil.rmtree(dir)
 os.makedirs(dir)
@@ -61,11 +61,11 @@ for imagePath in paths.list_images(args["images"]):
         continue
     # check blurry
     if fm < args["threshold"]:
-        # cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
         continue
     count += 1
 
     print(imagePath)
+    cv2.imwrite(os.path.join(dir , (imagePath.split('/'))[1]), gray)
     allImage.append(imagePath)
     # cv2.imshow('graycsale image',image)
     # cv2.waitKey(0)
