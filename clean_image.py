@@ -86,8 +86,6 @@ for imagePath in paths.list_images(args["images"]):
 
     eyes = eye_cascade.detectMultiScale(roi_gray)
 
-    print(len(smile))
-
     if len(face) == 0 or len(smile) < 1 or len(eyes) < 2:
         # print(imagePath)
         continue
