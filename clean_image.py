@@ -47,20 +47,49 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
 for imagePath in paths.list_images(args["images"]):
     image = cv2.imread(imagePath)
     height, width, channels = image.shape
+
     # check size image
     if(width != 350 or height != 350):
         continue
+
     # change color
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     fm = variance_of_laplacian(gray)
-    # detect face
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    face = face_cascade.detectMultiScale(gray, 1.1, 4)
-    if len(face) == 0:
-        # print(imagePath)
-        continue
+    
     # check blurry
     if fm < args["threshold"]:
+        continue
+    
+    # detect face
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+    smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
+    face = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor = 1.1,
+        minNeighbors = 5,
+        minSize = (200, 200),
+        flags = cv2.CASCADE_SCALE_IMAGE
+    )
+
+    for (x, y, w, h) in face:
+        roi_gray = gray[y:y+h, x:x+w]
+
+    smile = smile_cascade.detectMultiScale(
+        roi_gray,
+        scaleFactor = 1.16,
+        minNeighbors = 35,
+        minSize = (25, 25),
+        flags = cv2.CASCADE_SCALE_IMAGE
+    )
+
+    eyes = eye_cascade.detectMultiScale(roi_gray)
+
+    if len(face) == 0 or len(smile) == 0 or len(eyes) == 0:
+        # print(imagePath)
         continue
     count += 1
 
