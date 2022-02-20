@@ -61,8 +61,8 @@ for imagePath in paths.list_images(args["images"]):
         continue
     
     # detect face
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
     smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -70,7 +70,7 @@ for imagePath in paths.list_images(args["images"]):
     face = face_cascade.detectMultiScale(
         gray,
         scaleFactor = 1.1,
-        minNeighbors = 5,
+        minNeighbors = 4,
         minSize = (200, 200),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
@@ -79,14 +79,14 @@ for imagePath in paths.list_images(args["images"]):
         roi_gray = gray[y:y+h, x:x+w]
 
     smile = smile_cascade.detectMultiScale(
-        roi_gray,
+        gray,
         scaleFactor = 1.16,
         minNeighbors = 35,
         minSize = (25, 25),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
 
-    eyes = eye_cascade.detectMultiScale(roi_gray)
+    eyes = eye_cascade.detectMultiScale(gray)
 
     if len(face) == 0 or len(smile) == 0 or len(eyes) == 0:
         # print(imagePath)
