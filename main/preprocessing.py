@@ -6,9 +6,9 @@ import time
 import os
 import shutil
 import progressbar
+from method import Method
+import pandas as pd
 
-def variance_of_laplacian(image):
-	return cv2.Laplacian(image, cv2.CV_64F).var()
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--images", required=True,
@@ -39,65 +39,39 @@ widgets = [' [',
            progressbar.Bar('*'),' (',
            progressbar.ETA(), ') ',
           ]
-bar = progressbar.ProgressBar(max_value=13178, widgets=widgets).start()
+bar = progressbar.ProgressBar(max_value=13719, widgets=widgets).start()
 index = 0
+
+methods = Method()
 for image_path in path_lists:
     bar.update(index)
     index += 1
     image = cv2.imread(image_path)
     height, width, channels = image.shape
 
-    # check size image
-    if(width != 350 or height != 350):
-        continue
+    if(methods.checkSizeImage(height, width) == False):
+        continue;
 
     # change color
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    fm = variance_of_laplacian(gray)
+    gray = methods.getGrayScale(image)
+    fm = methods.getVarianceLaplacian(gray)
     
     # check blurry
-    if fm < args["threshold"]:
+    if(methods.checkBlur(fm, args['threshold']) == False):
         continue
-    
-    # detect face
-    face_cascade = cv2.CascadeClassifier('./utils/xml/haarcascade_frontalface_alt.xml')
-    eye_cascade = cv2.CascadeClassifier('./utils/xml/haarcascade_eye_tree_eyeglasses.xml')
-    smile_cascade = cv2.CascadeClassifier('./utils/xml/haarcascade_smile.xml')
 
-    face = face_cascade.detectMultiScale(
-        gray,
-        scaleFactor = 1.1,
-        minNeighbors = 4,
-        minSize = (200, 200),
-        flags = cv2.CASCADE_SCALE_IMAGE
-    )
-    
-    for (x, y, w, h) in face:
-        roi_gray = gray[y:y+h, x:x+w]
-
-    smile = smile_cascade.detectMultiScale(
-        roi_gray,
-        scaleFactor = 1.16,
-        minNeighbors = 35,
-        minSize = (25, 25),
-        flags = cv2.CASCADE_SCALE_IMAGE
-    )
-
-    eyes = eye_cascade.detectMultiScale(roi_gray)
-
-    if len(face) == 0 or len(smile) < 1 or len(eyes) < 2:
-        # print(imagePath)
-        continue
+    if(methods.detectFace(gray) == False):
+        continue;
     
     count += 1
     file_name = image_path.split("/")[3];
     d['image_path'].append(image_path);
     d['file_name'].append(file_name);
 
+df = pd.DataFrame(data=d);
+df.to_csv("./utils/csv/cleaned_images.csv");
 print("Total count : ", count)
 
-end = time.time()
-print("Time range : ", end - start)
 
 # f = open("cleanedImage.txt", "a")
 # f.write("\n".join(allImage))
