@@ -1,14 +1,20 @@
+from xml.etree.ElementInclude import include
 import pandas as pd
 import numpy as np
 import os
 import cv2, math, dlib
 from imutils import face_utils
 from matplotlib import pyplot as plt
+from sklearn.feature_selection import f_classif
+from sklearn.model_selection import train_test_split
+import seaborn as sns
 
 # read preprocessed data
 cwd = os.getcwd()
-df = pd.read_csv(cwd + "/data_csv/preprocessing_data.csv", index_col=[0])
-print(df)
+df = pd.read_csv(cwd + "/data_csv/preprocessing_data.csv")
+df.to_csv(cwd + "/data_csv/feature_data.csv", index=False)
+
+print(df.groupby('emotion').count())
 
 # ------------------------------------------------
 
@@ -72,7 +78,6 @@ for idx, row in df.iterrows():
     ])
     eye_size_list.append(np.mean([left_eye_avg, right_eye_avg]))
 
-
     # find distance between eye browns
     eye_brows = np.mean([ylist[24] - ylist[26], ylist[19] - ylist[17]])
     eye_brows_list.append(eye_brows)
@@ -101,11 +106,44 @@ df['average_distance'] = distlist
 df['eye_size'] = eye_size_list
 df['eye_brows'] = eye_brows_list
 
-df.to_csv(cwd + "/data_csv/preprocessing_data.csv", index=False)
+# df.to_csv(cwd + "/data_csv/feature_data.csv", index=False)
+# ------------------------------------------------
 
+# Prepare Input
 X = df[df.columns.difference(['Unnamed: 0', 'emotion', 'image'])]
-print(X.corr())
 
+# Prepare Output
+y = df[['emotion']]
+
+# ------------------------------------------------
+
+# Split Train test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=12)
+X_train, X_test = X_train.copy(), X_test.copy()
+
+# Select only int column
+X_train_num = X_train.select_dtypes(include = 'number').copy()
+
+# Use Anova
+X_train_num.fillna(X_train_num.mean(), inplace=True)
+
+F_statistic, p_values = f_classif(X_train_num, y_train)
+
+ANOVA_F_table = pd.DataFrame(data = {
+    'Numerical_Feature' : X_train_num.columns.values,
+    "F-SCORE" : F_statistic,
+    "P-VALUES" : p_values.round(demicals=10)
+})
+
+ANOVA_F_table.sort_values(by = ['F-SCORE'], ascending=False, ignore_index=True, inplace=True)
+
+num_top_feature = 10
+print(ANOVA_F_table.head(num_top_feature))
+column_top_feature = ANOVA_F_table.columns
+# ------------------------------------------------
+corrmat = X_train_num[column_top_feature].corr()
+plt.figure(figsize=(10, 10))
+print(sns.heatmap(corrmat))
 
 # ------------------------------------------------
 
@@ -124,12 +162,11 @@ dpc=pd.DataFrame(pca.components_.T,
                   index=cols, 
                   columns=X.columns)
                   
+
 # dpc
 dpc.style.applymap(lambda e: 'background-color: gray' if e > .5 else 'background-color: dark-white')
 
 # ------------------------------------------------
-
-import seaborn as sns
 dcorr=df[cols].corr()
 # dcorr
 
