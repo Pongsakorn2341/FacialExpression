@@ -1,4 +1,3 @@
-from xml.etree.ElementInclude import include
 import pandas as pd
 import numpy as np
 import os
@@ -8,6 +7,8 @@ from matplotlib import pyplot as plt
 from sklearn.feature_selection import f_classif
 from sklearn.model_selection import train_test_split
 import seaborn as sns
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 # read preprocessed data
 cwd = os.getcwd()
@@ -148,9 +149,6 @@ print(sns.heatmap(corrmat))
 # ------------------------------------------------
 
 # Plot PCA Graph
-
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 
 scaler = StandardScaler()
 pca = PCA(n_components=4)
